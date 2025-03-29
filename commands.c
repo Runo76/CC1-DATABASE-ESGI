@@ -16,15 +16,38 @@ void select_all_students() {
         return;
     }
 
-    printf("All students:\n");
+    printf("ID, Name, Grade\n");
     print_tree(root);
 }
 
 void select_student_by_id(int id) {
-    TreeNode* student_node = search_tree(root, id);
-    if (student_node != NULL) {
-        printf("Student found: ID: %d, Name: %s, Grade=%.2f\n", student_node->student.id, student_node->student.name, student_node->student.grade);
+    TreeNode* result = search_tree(root, id);
+    if (result = NULL) {
+        printf("No student found with ID %d.\n", id);
     } else {
-        printf("Student with ID %d not found.\n", id);
+        printf("ID, Name, Grade\n");
+        printf("%d, %s, %.2f\n", result->data.id, result->data.name, result->data.grade);
+    }
+}
+
+void delete_student(int id) {
+    root = delete_tree(root, id);
+    printf("Student with ID %d deleted.\n", id);
+}
+
+void execute_command(const char* query) {
+    if(strncmp(query, "SELECT", 6) == 0) {
+        if (strcmp(query, "SELECT * students;") == 0) {
+            select_all_students();
+        } else if (strncmp(query, "SELECT FROM students WHERE id =", 31) == 0) {
+            int id;
+            if (sscanf(query, "SELECT FROM students WHERE id = %d;", &id) == 1) {
+                select_student_by_id(id);
+            } else {
+                printf("Error: Malformed SELECT query.\n");
+            }
+        } else {
+            printf("Error: Malformed SELECT query.\n");
+        }
     }
 }
