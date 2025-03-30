@@ -1,4 +1,4 @@
-//#include "tree.h"
+#include "btree.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -36,7 +36,7 @@ void delete_student(int id) {
 }
 
 void execute_command(const char* query) {
-    if(strncmp(query, "SELECT", 6) == 0) {
+    if (strncmp(query, "SELECT", 6) == 0) {
         if (strcmp(query, "SELECT * students;") == 0) {
             select_all_students();
         } else if (strncmp(query, "SELECT FROM students WHERE id =", 31) == 0) {
@@ -49,5 +49,27 @@ void execute_command(const char* query) {
         } else {
             printf("Error: Malformed SELECT query.\n");
         }
+    } else if (strncmp(query, "INSERT", 6) == 0) {
+        int id;
+        char name[50];
+        float grade;
+
+        if (sscanf(query, "INSERT INTO students (id, name, grade) VALUES (%d, '%49[^']', %f);", &id, name, &grade) == 3) {
+            Student new_student = {id, "", grade};
+            strncpy(new_student.name, name, sizeof(new_student.name) - 1);
+            new_student.name[sizeof(new_student.name) - 1] = '\0';
+            insert_student(new_student);
+        } else {
+            printf("Error: Malformed INSERT query.\n");
+        }
+    } else if (strncmp(query, "DELETE", 6) == 0) {
+        int id;
+        if (sscanf(query, "DELETE FROM students WHERE id = %d;", &id) == 1) {
+            delete_student(id);
+        } else {
+            printf("Error: Malformed DELETE query.\n");
+        }
+    } else {
+        printf("Unknown command: '%s'\n", query);
     }
 }
