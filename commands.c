@@ -2,12 +2,12 @@
 #include <stdio.h>
 #include <string.h>
 
+// Global root node for the binary tree
 TreeNode* root = NULL;
 
 void insert_student(Student student) {
     root = insert_tree(root, student);
-    print("Student inserted: ID: %d, Name: %s\n, Grade=%.2f", student.id, student.name, student.grade);
-
+    printf("Student inserted: ID=%d, Name=%s, Grade=%.2f\n", student.id, student.name, student.grade);
 }
 
 void select_all_students() {
@@ -17,12 +17,12 @@ void select_all_students() {
     }
 
     printf("ID, Name, Grade\n");
-    print_tree(root);
+    inorder_traversal(root);
 }
 
 void select_student_by_id(int id) {
     TreeNode* result = search_tree(root, id);
-    if (result = NULL) {
+    if (result == NULL) {
         printf("No student found with ID %d.\n", id);
     } else {
         printf("ID, Name, Grade\n");
@@ -34,6 +34,7 @@ void delete_student(int id) {
     root = delete_tree(root, id);
     printf("Student with ID %d deleted.\n", id);
 }
+
 
 void execute_command(const char* query) {
     if (strncmp(query, "SELECT", 6) == 0) {

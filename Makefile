@@ -3,7 +3,7 @@ CFLAGS = -Wall -Wextra -std=c11 -g
 
 SRC = main.c commands.c btree.c
 OBJ = $(SRC:.c=.o)
-TARGET = database
+TARGET = db
 
 all: $(TARGET)
 
