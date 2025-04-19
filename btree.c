@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Insert a student into the tree
+
 TreeNode* insert_tree(TreeNode* root, Student student) {
     if (root == NULL) {
         TreeNode* new_node = (TreeNode*)malloc(sizeof(TreeNode));
@@ -76,6 +76,28 @@ void inorder_traversal(TreeNode* root) {
     if (root == NULL) return;
 
     inorder_traversal(root->left);
-    printf("ID: %d, Name: %s, Grade: %.2f\n", root->data.id, root->data.name, root->data.grade);
+    printf("%d, %s, %.2f\n", root->data.id, root->data.name, root->data.grade);
     inorder_traversal(root->right);
+}
+
+void save_tree_to_file(TreeNode* root, FILE* file) {
+    if (root == NULL || file == NULL) return;
+
+    save_tree_to_file(root->left, file);
+    fprintf(file, "%d,%s,%.2f\n", root->data.id, root->data.name, root->data.grade);
+    save_tree_to_file(root->right, file);
+}
+
+void load_tree_from_file(TreeNode** root, const char* filename) {
+    FILE* file = fopen(filename, "r");
+    if (file == NULL) return;
+
+    char line[256];
+    while (fgets(line, sizeof(line), file)) {
+        Student student;
+        sscanf(line, "%d,%49[^,],%f", &student.id, student.name, &student.grade);
+        *root = insert_tree(*root, student);
+    }
+
+    fclose(file);
 }
