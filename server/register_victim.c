@@ -1,6 +1,6 @@
 #include <string.h>
 #include <stdio.h>
-#include "btree.h"
+#include "../db_c/btree.h"
 
 // Global root node from your btree
 TreeNode* root = NULL;
