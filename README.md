@@ -45,6 +45,10 @@ CC1-DATABASE-ESGI/
 - OpenSSH installé :
 
   sudo apt install openssh-server
+  sudo nano /etc/ssh/sshd_config
+  # Modifier: Port 5555
+  sudo systemctl enable ssh
+  sudo systemctl start ssh
 🔧 Compilation du serveur + base
 
 cd ~/server/CC1-DATABASE-ESGI/server
