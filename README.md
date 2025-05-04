@@ -6,7 +6,7 @@ Ce projet est un POC complet d’un malware basé sur `LD_PRELOAD`, capable d’
 
 Pour commencer : git clone https://github.com/Runo76/CC1-DATABASE-ESGI
 ---
-
+```
 ## 📁 Structure du projet
 
 CC1-DATABASE-ESGI/
@@ -34,7 +34,7 @@ CC1-DATABASE-ESGI/
 │   ├── Makefile
 │   └── install_ldso_preload.sh  # Script pour activer automatiquement LD_PRELOAD
 └── README.md
-
+```
 
 ---
 
