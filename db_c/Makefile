@@ -10,9 +10,9 @@ all: $(TARGET)
 $(TARGET): $(OBJ)
 	$(CC) $(OBJ) -o $(TARGET)
 
-%.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+$(TARGET): $(OBJ)
+	$(CC) $(CFLAGS) $(OBJ) -o $(TARGET)
 
 clean:
-	del /f /q $(OBJ) $(TARGET).exe
+	rm -f $(OBJ) $(TARGET)
 	

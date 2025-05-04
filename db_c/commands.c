@@ -5,10 +5,7 @@
 // Global root node for the binary tree
 TreeNode* root = NULL;
 
-void insert_student(Student student) {
-    root = insert_tree(root, student);
-    printf("Student inserted: ID=%d, Name=%s, Grade=%.2f\n", student.id, student.name, student.grade);
-}
+extern void insert_student(TreeNode** root, const char* name, float grade);
 
 void select_all_students() {
     if (root == NULL) {
@@ -32,9 +29,10 @@ void select_student_by_id(int id) {
 
 void delete_student(int id) {
     root = delete_tree(root, id);
+    rewrite_file_from_tree(root, "students.csv");
+    persist_btree(root);
     printf("Student with ID %d deleted.\n", id);
 }
-
 
 void execute_command(const char* query) {
     if (strncmp(query, "SELECT", 6) == 0) {
@@ -51,15 +49,11 @@ void execute_command(const char* query) {
             printf("Error: Malformed SELECT query.\n");
         }
     } else if (strncmp(query, "INSERT", 6) == 0) {
-        int id;
         char name[50];
         float grade;
 
-        if (sscanf(query, "INSERT INTO students (id, name, grade) VALUES (%d, '%49[^']', %f);", &id, name, &grade) == 3) {
-            Student new_student = {id, "", grade};
-            strncpy(new_student.name, name, sizeof(new_student.name) - 1);
-            new_student.name[sizeof(new_student.name) - 1] = '\0';
-            insert_student(new_student);
+        if (sscanf(query, "INSERT INTO students (name, grade) VALUES ('%49[^']', %f);", name, &grade) == 2) {
+            insert_student(&root, name, grade);
         } else {
             printf("Error: Malformed INSERT query.\n");
         }
