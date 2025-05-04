@@ -4,35 +4,37 @@
 
 Ce projet est un POC complet d’un malware basé sur `LD_PRELOAD`, capable d’intercepter les identifiants SSH d’un utilisateur, de les envoyer à un serveur distant C2, et de les stocker de manière persistante dans une base de données implémentée en C à l’aide d’un B-Tree.
 
+Pour commencer : git clone https://github.com/Runo76/CC1-DATABASE-ESGI
 ---
 
 ## 📁 Structure du projet
 
 CC1-DATABASE-ESGI/
-├── server/
-│ ├── server.c
-│ ├── register_victim.c
-│ ├── Makefile
-│ └── ...
-├── BTreeDB/
-│ ├── author.md
-│ ├── btree.c/.h/.o
-│ ├── table.c/.h/.o
-│ ├── repl.c/.h/.o
-│ ├── persistence.c/.h/.o
-│ ├── main.c/.o
-│ ├── database.db # base des victims
-│ ├── id_counter.txt # ID auto-incrémenté
-│ ├── db.txt, db/, tests/
-│ ├── Makefile, README.md
-│ └── BTreeProject/
-├── LD_PRELOAD/malware/
-│ ├── malware.c
-│ ├── send_to_c2.c
-│ ├── malware.so
-│ ├── Makefile
-│ └── install_ldso_preload.sh
+├── server/                    # Serveur C2 (écoute, enregistre les victimes)
+│   ├── server.c
+│   ├── register_victim.c
+│   ├── Makefile
+│   └── ...
+├── BTreeDB/                   # Base de données des victimes (B-Tree)
+│   ├── author.md
+│   ├── btree.c/.h/.o
+│   ├── table.c/.h/.o
+│   ├── repl.c/.h/.o
+│   ├── persistence.c/.h/.o
+│   ├── main.c/.o
+│   ├── database.db           # Fichier de base de données persistante
+│   ├── id_counter.txt        # Fichier de compteur ID auto-incrémenté
+│   ├── db.txt, db/, tests/   # Données et tests
+│   ├── Makefile, README.md
+│   └── BTreeProject/
+├── LD_PRELOAD/malware/       # Malware LD_PRELOAD (client espion)
+│   ├── malware.c
+│   ├── send_to_c2.c
+│   ├── malware.so            # Généré après compilation
+│   ├── Makefile
+│   └── install_ldso_preload.sh  # Script pour activer automatiquement LD_PRELOAD
 └── README.md
+
 
 ---
 
