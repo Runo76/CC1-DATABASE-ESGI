@@ -58,7 +58,7 @@ CC1-DATABASE-ESGI/
 
 ---
 
-## 💻 VM 1 – Serveur C2 (192.168.1.20)
+## 💻 VM 1 – Serveur C2
 
 ### 🛠️ Prérequis
 
@@ -108,7 +108,7 @@ Le serveur écoute sur le port `5555`. Il reçoit :
 
 ---
 
-## 💻 VM 2 – Malware LD_PRELOAD (192.168.1.15)
+## 💻 VM 2 – Malware LD_PRELOAD (IP a modifier)
 
 ### 🛠️ Prérequis
 
