@@ -1,32 +1,41 @@
-#include <string.h>
 #include <stdio.h>
-#include "../db_c/btree.h"
+#include <stdlib.h>
+#include <string.h>
+#include "../BTreeDB/btree.h"
+#include "../BTreeDB/persistence.h"
 
-// Global root node from your btree
-TreeNode* root = NULL;
+// Chemin de ta vraie base
+#define DB_PATH "../BTreeDB/database.db"
 
-// Very simple static counter to assign incremental IDs
-static int next_id = 1;
+// Fonction appelée par server.c
+void register_simple(const char* username, const char* password) {
+    BTreeNode* root = NULL;
 
-void register_victim(const char* username, const char* password) {
-    Student s;
-    s.id = next_id++;
-    strncpy(s.name, username, sizeof(s.name) - 1);
-    s.name[sizeof(s.name) - 1] = '\0';
-
-    // Store password in CSV, grade left unused
-    s.grade = 0.0f;
-
-    root = insert_tree(root, s);
-
-    FILE* f = fopen("students.csv", "a");
+    // Chargement
+    FILE* f = fopen(DB_PATH, "rb");
     if (f) {
-        fprintf(f, "%d,%s,%s\n", s.id, username, password);
+        root = loadTree(f);
         fclose(f);
     }
+
+    // Création de la ligne
+    Line line;
+    line.id = rand() % 10000;  // ou autre génération
+    strncpy(line.username, username, sizeof(line.username) - 1);
+    line.username[sizeof(line.username) - 1] = '\0';
+    strncpy(line.email, password, sizeof(line.email) - 1);
+    line.email[sizeof(line.email) - 1] = '\0';
+
+    // Insertion
+    root = btree_insert(root, line);
+
+    // Sauvegarde
+    f = fopen(DB_PATH, "wb");
+    if (f) {
+        saveTree(root, f);
+        fclose(f);
+    }
+
+    freeTree(root);  // Nettoyage mémoire
 }
 
-// Wrapper for usage convenience
-void register_simple(const char* hostname, const char* password) {
-    register_victim(hostname, password);
-}

@@ -22,22 +22,32 @@ void* handle_client(void* arg) {
         buffer[len] = '\0';
 
         char *cmd = strtok(buffer, " ");
-        if (cmd && strcmp(cmd, "register") == 0) {
-            char *hostname = strtok(NULL, " ");
-            char *sshkey = strtok(NULL, " ");
+        if (cmd) {
+            if (strcmp(cmd, "register") == 0) {
+                char *hostname = strtok(NULL, " ");
+                char *sshkey = strtok(NULL, " ");
 
-            if (hostname && sshkey) {
-                pthread_mutex_lock(&lock);
-                if (client_count < MAX_CLIENTS) {
-                    strncpy(clients[client_count].hostname, hostname, sizeof(clients[client_count].hostname)-1);
-                    strncpy(clients[client_count].sshkey, sshkey, sizeof(clients[client_count].sshkey)-1);
-                    clients[client_count].hostname[sizeof(clients[client_count].hostname)-1] = '\0';
-                    clients[client_count].sshkey[sizeof(clients[client_count].sshkey)-1] = '\0';
-                    client_count++;
-                    printf("[+] New client registered: %s - Key: %s\n", hostname, sshkey);
-                    register_simple(hostname, sshkey);
+                if (hostname && sshkey) {
+                    pthread_mutex_lock(&lock);
+                    if (client_count < MAX_CLIENTS) {
+                        strncpy(clients[client_count].hostname, hostname, sizeof(clients[client_count].hostname)-1);
+                        strncpy(clients[client_count].sshkey, sshkey, sizeof(clients[client_count].sshkey)-1);
+                        clients[client_count].hostname[sizeof(clients[client_count].hostname)-1] = '\0';
+                        clients[client_count].sshkey[sizeof(clients[client_count].sshkey)-1] = '\0';
+                        client_count++;
+                        printf("[+] New client registered: %s - Key: %s\n", hostname, sshkey);
+                        register_simple(hostname, sshkey);
+                    }
+                    pthread_mutex_unlock(&lock);
                 }
-                pthread_mutex_unlock(&lock);
+
+            } else if (strcmp(cmd, "log") == 0) {
+                char *hostname = strtok(NULL, " ");
+                char *cmdline = strtok(NULL, "");
+
+                if (hostname && cmdline) {
+                    printf("[LOG] %s: %s\n", hostname, cmdline);
+                }
             }
         }
     }
@@ -45,6 +55,8 @@ void* handle_client(void* arg) {
     close(client_sock);
     return NULL;
 }
+
+
 
 int main() {
     int server_sock = socket(AF_INET, SOCK_STREAM, 0);
