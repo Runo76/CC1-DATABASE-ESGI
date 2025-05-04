@@ -24,5 +24,9 @@ TreeNode* delete_tree(TreeNode* root, int id);
 void inorder_traversal(TreeNode* root);
 void save_tree_to_file(TreeNode* root, FILE* file);
 void load_tree_from_file(TreeNode** root, const char* filename);
+void persist_btree(TreeNode* root);
+TreeNode* restore_btree();
+void rewrite_file_from_tree(TreeNode* root, const char* filename);
+
 
 #endif
