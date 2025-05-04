@@ -86,23 +86,8 @@ make
 
 ## 🗃️ Base de Données B-Tree en C
 
-### Fonctionnalités :
-- Stocke les identifiants SSH exfiltrés
-- Gère aussi les étudiants via interface SQL simplifiée
-- Persistance dans `students.csv`
-- Réécriture automatique du fichier après suppression pour réindexer les IDs
-
-### Compilation & Exécution :
-```bash
-cd db_c
-make
-./db
-```
-
-### Commandes supportées :
-```sql
 Voir README.md dans BTreeDB
-```
+
 
 ---
 
