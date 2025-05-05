@@ -164,8 +164,8 @@ cd BTreeDB
 Lancer la commande dans la CLI :
 
 ```
-select
-Autre commande disponible detaillé dans le README.md du dossier BTreeDB
+db > select
+Commande disponible detaillé dans le README.md du dossier BTreeDB
 ```
 
 > Résultat exemple :
@@ -173,10 +173,24 @@ Autre commande disponible detaillé dans le README.md du dossier BTreeDB
 (1, anisdebian, 1478)
 (2, onur, 1234)
 ```
+___________________________________________________
+```
+#Comment utiliser les commande db ?
+Voici des exemples de commandes :
 
----
-
-## 🧪 Exemple de test complet
+db > insert 1 anis anis@gmail.com (id | nom ou autre | mail, mdp ou autre)
+___________________________________________________
+db > select
+db > (affiche) 1 anis anis@gmail.com
+___________________________________________________
+db > update 1 Anis2 1254 (id | nom ou autre | mail, mdp ou autre)
+db > select
+db >(affiche)  1 Anis2 1254
+___________________________________________________
+db > delete 1  (juste delete id)
+db > .exit
+```
+# 🧪 Exemple de test complet
 
 1. **Lancer le serveur sur la VM 1** :
 
