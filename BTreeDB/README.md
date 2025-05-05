@@ -35,12 +35,9 @@ Final")
 -Utilisation de Vim (pour ma part)
 
 # Étapes
-1. Cloner le projet :
-#bash/Vim
-$ git clone https://github.com/anis/BTreeProject.git
-$ cd BTreeProject
 
-2. Compiler le projet :
+$ cd BTreeProject
+1. Compiler le projet :
 #bash/Vim
 $ make
 -----------------------------
@@ -58,11 +55,11 @@ Ce message signifie que le programme ne présente aucune fuite mémoire et fonct
 Sinon sauter le bonus et reprendre à l'étape 3 
 ---------------------------
 
-3. Lancer la base de données :
+2. Lancer la base de données :
 #bash/Vim
 $ ./db
 
-4. Pour exécuter les tests unitaires :
+3. Pour exécuter les tests unitaires :
 #bash/Vim
 $ make tests
 $ ./tests/test
@@ -73,7 +70,7 @@ $ ./tests/test
 
 Le même message que dans le "Bonus" juste au dessus doit apparaître.
 ----------------------------- 
-5. Make clean ?
+4. Make clean ?
 -Faire "make clean" avant de compiler le projet avec "make" en cas de besoin    pour ne pas conserver de fichiers objets ou d'exécutables précédents 
 
 
@@ -106,19 +103,22 @@ BTreeProject/
 ├── Makefile       # Compilation automatique
 └── tests/         # Tests unitaires
     └── test_btree.c
-
+```
 #Comment utiliser ?
 Voici des exemples de commandes :
 bash/Vim
-db > insert 1 anis anis@gmail.com
+db > insert 1 anis anis@gmail.com (id | nom ou autre | mail, mdp ou autre)
+___________________________________________________
 db > select
 db > (affiche) 1 anis anis@gmail.com
-db > update 1 AnisUpdated anis_updated@gmail.com
+___________________________________________________
+db > update 1 Anis2 anis_updated@gmail.com (id | nom ou autre | mail, mdp ou autre)
 db > select
 db >(affiche)  1 AnisUpdated anis_updated@gmail.com
-db > delete 1
+___________________________________________________
+db > delete 1  (juste delete id)
 db > .exit
-
+``
 
 
 # Tests Unitaires
@@ -134,7 +134,7 @@ $ make tests
 $ ./tests/test
 
 #Auteur
--Anis Slimani - Étudiant en Bachelor Cybersécurité 
+-Anis Slimani - Angelov Onur - Étudiant en Bachelor Cybersécurité 
 
 #Remarque
 Ce projet a été réalisé dans le cadre de la formation Bachelor Cybersécurité à lESGI.
